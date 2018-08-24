@@ -1,34 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('JavaScript loaded');
+  const form = document.querySelector('#new-item-form');
+  form.addEventListener('submit', handleFormSubmit);
 
-const form = document.querySelector('#new-item-form');
-form.addEventListener('submit', handleFormSubmit);
-});
-//------
+  renderList();
+})
+
+let readingList;
+if (JSON.parse(localStorage.getItem('books')) !== null){
+  readingList = JSON.parse(localStorage.getItem('books'));
+} else {
+  readingList = [];
+}
 
 const handleFormSubmit = function(event){
   event.preventDefault();
 
-  // const newItem = document.createElement("li");
-  // newListItem.textContent = `${event.target.title.value}`;
-  // newListItem.classPrimary.add("title");
-  // const list = document.querySelector('ul');
-  // list.appendChild(newListItem);
-  //
-  // const newItem = document.createElement("li");
-  // newListItem.textContent = `${event.target.author.value}`;
-  // newListItem.classPrimary.add("author");
-  // const list = document.querySelector('ul');
-  // list.appendChild(newListItem);
-  //
-  // const newItem = document.createElement("li");
-  // newListItem.textContent = `${event.target.category.value}`;
-  // newListItem.classPrimary.add("category");
-  // const list = document.querySelector('ul');
-  // list.appendChild(newListItem);
+  const newBook = {
+    title: event.target.title.value,
+    author: event.target.author.value,
+    category: event.target.category.value
+  };
 
-  const resultForm = document.querySelector('#reading-list')
-  resultForm.textContent = `${event.target.title.value} ${event.target.author.value} ${event.target.category.value}`
+  readingList.push(newBook); //once clicked, submit books 
 
-  document.querySelector("#new-item-form").reset();
+  localStorage.setItem('books', JSON.stringify(readingList));
+  event.target.reset()
+  renderList();
+};
+
+const renderList = function(){
+    const readingDiv = document.querySelector('#reading-list');
+    readingDiv.innerHTML = "";
+  const bookList = JSON.parse(localStorage.getItem('books'));
+  bookList.forEach((book) => {
+    const bookUl = document.createElement('ul');
+    const titleLi = document.createElement('li');
+    titleLi.textContent = `Title: ${book.title}`;
+    const authorLi = document.createElement('li');
+    authorLi.textContent = `Author: ${book.author}`;
+    const categoryLi = document.createElement('li');
+    categoryLi.textContent = `Category: ${book.category}`;
+
+    bookUl.appendChild(titleLi);
+    bookUl.appendChild(authorLi);
+    bookUl.appendChild(categoryLi);
+
+
+    readingDiv.appendChild(bookUl);
+  })
 }
